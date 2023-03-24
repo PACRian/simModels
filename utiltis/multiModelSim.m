@@ -33,6 +33,10 @@ function simResults = multiModelSim(modelName, subSysName, ...
 % + noTrace: A boolean variable determining whether it should be kept.
 % + verbose: 0(Default) - No intermediate process display; 1 - A brief log; 2 - A
 % throughout record. 
+% **Ambiguity Notes**: 
+% verbose can also be an indicator to manipulate the estabilish of the
+% whole model, if `verbose` is set to `3`, then the model build up with the
+% "top" parameter group and no simulation will be carried out.
 % [Return]: 
 % + SimResults: A cell object that stores each simulation results(instance
 % class is 'Simulink.SimulationOutput')
@@ -83,6 +87,11 @@ arguments
     verbose (1, 1) = 0
 end
 
+if verbose==3
+    % See "Ambiguity Notes" about `verbose`
+    noTrace = false;
+end
+
 if isempty(modelName)
     modelName = findSimModel;
     disv(verbose, {}, '[Info] Model %s found\n', [modelName, '.slx']);
@@ -116,6 +125,10 @@ for n = 1:trials
     end
 
     save_system(modelName);
+    
+    if verbose==3
+        simResults = {}; return
+    end
     
     % Config running parameters and run it.
     simResults{n} = sim([modelName, '.slx'], simConfigs{:});
