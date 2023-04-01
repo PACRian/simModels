@@ -3,7 +3,7 @@ function addFolders(folderList, addSubs)
 currFolder = pwd;
 switch nargin
 case 0
-    folderList = {'utiltis\', 'funcutil\', 'tdmodule\'};
+    folderList = {'utiltis\', 'funcutil\', 'buildtools\'};
     addSubs = 1;
 case 1
     assert(iscell(folderList) || ischar(folderList));
