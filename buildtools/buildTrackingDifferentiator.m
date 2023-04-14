@@ -35,7 +35,7 @@ DEFAULT_CONFIGS = struct( ...
     ...                              % 'towk', only the block 'to Workspace'
     ...                              
     'returnType', 'all');
-assignin('base', 'DEFAULT_CONFIGS', DEFAULT_CONFIGS);
+% assignin('base', 'DEFAULT_CONFIGS', DEFAULT_CONFIGS);
 cfg = update_struct(DEFAULT_CONFIGS, struct(varargin{:}));
 % Check whether the system exists
 % If not, then build it.
