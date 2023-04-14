@@ -47,9 +47,9 @@ setTestSuite('setSweepSuite', 'moduleName', arshTdName);
 
 <div style="text-align: center; font-family:"Times New Roman", Times, serif;"> Model diagram and its frenquency sweep test </div>
 
-It is expected, as the [paper](https://www.cnki.com.cn/Article/CJFDTotal-KZYC201406029.htm) has given that curve, the full demonstration code can be checked [here]().
+It is expected, as the [paper](https://www.cnki.com.cn/Article/CJFDTotal-KZYC201406029.htm) has given that curve, the full demonstration code can be checked [here](https://github.com/PACRian/simModels/blob/main/examples/buildandTestArshTD.m).
 
-If you just want to see the response at a few single frequencies, select `setSineSuite` in the test-suite, then do auto-simulaiton by calling `multiModelSim`, below is the timing diagram and inner phase flow at At test sine-wave frequency 1Hz and 2Hz. For sample code see [here](), and look at the the [example directory]() for more knowledge. 
+If you just want to see the response at a few single frequencies, select `setSineSuite` in the test-suite, then do auto-simulaiton by calling `multiModelSim`, below is the timing diagram and inner phase flow at At test sine-wave frequency 1Hz and 2Hz. For sample code see [here](https://github.com/PACRian/simModels/blob/main/examples/buildandTestArshTDwithSingleFrenquency.m), and look at the the [example directory](https://github.com/PACRian/simModels/tree/main/examples) for more knowledge. 
 
 ```matlab
 setTestSuite('setSineSuite', 'moduleName', arshTdName);            
@@ -141,7 +141,7 @@ Detailed  `Name, Value` pairs need to be set up according to the specific `tests
 
 ## Changelog
 
-Commit 
+[Commit 18d6aa6](https://github.com/PACRian/simModels/commit/18d6aa6ad5914388ec2c2f2a79a9e37a32eb262c)
 
 1. Add `save_sytem` process when test suite is finished, in `setTestSuite`.
 2. Add "DOUBLE BUILD" to supress "Empty struct" error when build a TD block, in `buildTrackingDifferentiator`
