@@ -44,6 +44,7 @@ function logs = getSingleSimLogs(simOut, signals, OtherType)
         signals = simLogs.getElementNames();
     end
     
+    signals = signals(~cellfun(@isempty, signals)); % Remove the nameless
     for i=1:length(signals)
 %         logs = [logs simLogs.get(signals{i}).Values];
         logs.(signals{i}) = simLogs.get(signals{i}).Values;

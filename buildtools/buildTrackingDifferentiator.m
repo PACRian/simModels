@@ -5,7 +5,7 @@ DEFAULT_CONFIGS = struct( ...
     'stylish', '', ...                % Stylish can be `sweep` or `input`[TODO]
     ... 
     'sysPrefix', '', ...
-    'sysName', 'TrackerDerivates', ...
+    'sysName', 'TrackingDifferentiator', ...
     'funcName', 'sigmoid', ...
     ...
     'wksSigName', 'SigIn', ...
@@ -34,16 +34,30 @@ DEFAULT_CONFIGS = struct( ...
     ...                              % 'td', only the module name of the Td module
     ...                              % 'towk', only the block 'to Workspace'
     ...                              
-    'returnType', 'all');
-% assignin('base', 'DEFAULT_CONFIGS', DEFAULT_CONFIGS);
+    'returnType', 'all', ...
+    'killOld', true);
 cfg = update_struct(DEFAULT_CONFIGS, struct(varargin{:}));
+% Kill previous duplicated system if possible
+if cfg.killOld
+    try
+        close_system(cfg.sysName);
+        delete([cfg.sysName, '.slx']);
+    catch
+    end
+end
+
 % Check whether the system exists
 % If not, then build it.
 cfg.sysName = [cfg.sysPrefix, cfg.sysName];
 checkSimulinkSys(cfg.sysName);
 % Build basic modules(Td Module & One fromWks & Two toWks)
-load_system(cfg.sysName);
-TdModule = buildTdFuncs(cfg.sysName, cfg.funcName);
+% close_system(cfg.sysName);
+% load_system(cfg.sysName);
+try % DOUBLE BUILD TD BLOCK
+    TdModule = buildTdFuncs(cfg.sysName, cfg.funcName);
+catch
+    TdModule = buildTdFuncs(cfg.sysName, cfg.funcName);
+end
 FromWkModule = buildModules('buildFromWk', 'moduleName', cfg.sysName, ...
     'InPortName', cfg.wksSigName, 'simInVariableName', cfg.wksVariableName);
 ToWkSignaltraModule = buildModules('buildToWk', 'moduleName', cfg.sysName, ...
@@ -51,10 +65,9 @@ ToWkSignaltraModule = buildModules('buildToWk', 'moduleName', cfg.sysName, ...
 ToWkDifftraModule = buildModules('buildToWk', 'moduleName', cfg.sysName, ...
    'OutPortName', cfg.diffSigName, ...
    'simOutVariableName', cfg.simDiffVariableName, 'Position', [320, 120, 360, 140]);
-save_system(cfg.sysName);
+% save_system(cfg.sysName);
 
 % Add lines
-load_system(cfg.sysName);
 TdModule = withBlock(TdModule, 'strip');
 buildModules('connectLine', 'moudleName', cfg.sysName, 'srcBlockName', FromWkModule, ...
     'destBlockName', TdModule, 'LineName', cfg.wksLineName);
@@ -76,7 +89,6 @@ if cfg.doLogFromWkSignal
     buildModules('connectLine', 'moudleName', cfg.sysName, 'srcBlockName', FromWkModule, ...
         'destBlockName', ToWkSignalsigModule, 'alreadyLogged', true);
 end
-save_system(cfg.sysName);
 
 % Additional work: create a timeseries object and then assign it to the
 % workspace as the input signal for the model.
@@ -93,7 +105,7 @@ if cfg.assignInputSig
     assignin('base', cfg.wksVariableName, ts);
 end
 
-
+save_system(cfg.sysName);
 switch cfg.returnType
     case 'all'
         varargout = {TdModule, FromWkModule, ToWkSignaltraModule, ToWkDifftraModule};

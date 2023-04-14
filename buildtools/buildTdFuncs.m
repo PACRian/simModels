@@ -69,6 +69,7 @@ end
 sf = sfroot();
 fcn1 = sf.find('Path', [TdName, '/fcnBlock1'], '-isa', 'Stateflow.EMChart');
 fcn1.Script = sprintf(funcScript);
+% set_param(fcn1, 'Script', sprintf(funcScript));
 fcn2 = sf.find('Path', [TdName, '/fcnBlock2'], '-isa', 'Stateflow.EMChart');
 fcn2.Script = sprintf(funcScript);
 end

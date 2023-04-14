@@ -1,5 +1,14 @@
 function setTestSuite(setFunc, varargin)
 feval(setFunc, struct(varargin{:}));
+
+sysIdx = find(cellfun(@(x) isequal(x, 'moduleName'), varargin), 1);
+if ~isempty(sysIdx)
+    moduleName = varargin{sysIdx+1};
+else
+    moduleName = findSimModel;
+end
+
+save_system(moduleName);
 end
 
 % Use this function to test the frenquency response characteristic.
@@ -37,11 +46,13 @@ cfg = update_struct(struct('moduleName', findSimModel, ...
     'simulationTime', 10, 'decayRatio', 10, ...
     'ncycleRoundMethod', 'round'), cfg);
 
-load_system(cfg.moduleName);
+try
+    load_system(cfg.moduleName);
+catch 
+end
 if cfg.configTowksModule
     if isempty(cfg.ToWksModules)
         cfg.ToWksModules = find_system(cfg.moduleName, 'BlockType', 'ToWorkspace');
-        disp(cfg.ToWksModules)
     end
     
     for i=1:length(cfg.ToWksModules)
@@ -112,6 +123,7 @@ end
 function setPulseGenerator
 end
 
+% function 
 function setTriangleSweepSuite(cfg)
 cfg = update_struct(struct('moduleName', findSimModel, ...
     'sigName', 'x', ...
@@ -148,9 +160,50 @@ for wks=cfg.FromWksModules
 end
 end
 
-% function setSineWaveSuite(cfg)
-% cfg = update_struct(struct(), cfg);
-% 
-% if cfg.
-% end
-% end
+function setSineSuite(cfg)
+% Basically three options to be modified on a generic model
+% 1. Set `deletePreviousIn` to `true` to delete previous "input block" like
+% other signal generator or "FromWorkspace" module;
+% 2. Set the sine wave generator label name -- 'sineGenName'.
+
+cfg = update_struct(struct('moduleName', findSimModel, ...
+    'deletePreviousIn', true, ...
+    'sineGenName', 'sineIn', ...
+    'sineLineName', 's'), cfg);
+
+[sigIn, sigLine, tdName] = getSingalSource(cfg.moduleName);
+tdName = withBlock(tdName, 'strip', cfg.moduleName);
+if cfg.deletePreviousIn
+    delete_block(sigIn);
+end
+
+delete_line(sigLine);
+add_block('simulink/Sources/Sine Wave', ...
+    [cfg.moduleName, '/', cfg.sineGenName], 'Position', [20, 80, 60, 100]);
+buildModules('connectLine', 'moudleName', cfg.moduleName, ...
+    'srcBlockName', cfg.sineGenName, 'destBlockName', tdName, 'LineName', cfg.sineLineName);
+
+end
+
+
+function [sigBlock, sigInLine, tdBlock] = getSingalSource(sysName)
+
+% Find possible TD block
+tdBlocks = find_system(sysName, 'BlockType', 'SubSystem');
+if isempty(tdBlocks)
+    error('Not a valid TD model');
+end
+
+for i=1:length(tdBlocks)
+    tdBlock = tdBlocks{i};
+    if endsWith(tdBlock, 'TrackingDifferentiator')
+        break
+    end
+end
+
+% Check the input line and its link
+sigInLine = get_param(get_param(tdBlock,'PortHandles').Inport, 'Line');
+sigBlock = get_param(get_param(sigInLine,'SrcBlockHandle'), 'Name');
+sigBlock = [sysName, '/', sigBlock];
+
+end
