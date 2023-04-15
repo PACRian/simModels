@@ -61,6 +61,7 @@ try
     funcScript = getfield(getStoredFuncs, funcName);
 catch
     funcScript = evalc(['type ',funcName, '.m']);
+%     assignin('base', 'funcS', funcScript);
 end
 
 %MAIN OPTION

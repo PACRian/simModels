@@ -28,7 +28,9 @@ Then you will find that `simtools`, `buildtools` and `utiltis`  are added to the
 
 2. Step Two: *Building*
 
-Build a tracking differentiator using `buildTrackingDifferentiator`, specify the module name and custom non-linear function name. Here's an example showing how to create an ASinh-TD, custom core function supported(See another example [here]()):
+Build a tracking differentiator using `buildTrackingDifferentiator`, specify the module name and custom non-linear function name. 
+
+Here's an example showing how to create an ASinh-TD,  where the inverse hyperbolic sine function is part of the preset library. Moreover, we can define a custom function and use it(See **another example** [here]()):
 
 ```matlab
 arshTdName = 'arshTd';
@@ -95,7 +97,7 @@ Its function is to build a custom TD block in the current folder, and return the
   % y = ...
   ```
 
-  where `a, b` are the parameters controlling the strech scale, and `x, y`  are the function input and output. If If the number of control parameters is less than two, leave the unused one as `~`. 
+  where `a, b` are the parameters controlling the strech scale, and `x, y`  are the function input and output. If If the number of control parameters is less than two, leave the unused one as `~`. In addition, **comment lines should not appear** in that function script for now.
 
 + `wksSigName` | [Default `'SigIn'`]: The "From Workspace" block name, it can further take variable in the main base as the input signal of this tracking differentiator.
 
